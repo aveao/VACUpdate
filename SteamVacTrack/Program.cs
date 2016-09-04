@@ -18,13 +18,11 @@ namespace SteamVacTrack
             public string SteamID { get; set; }
             public string AddedBy { get; set; }
             public bool Banned { get; set; }
-            public bool Informed { get; set; }
-            public TrackedUser(string steamid, string addedBy, bool banned, bool informed)
+            public TrackedUser(string steamid, string addedBy, bool banned)
             {
                 SteamID = steamid;
                 AddedBy = addedBy;
                 Banned = banned;
-                Informed = informed;
             }
         }
 
@@ -40,14 +38,14 @@ namespace SteamVacTrack
                     if (isbanned)
                     {
                         DeleteTrackedUser(user.SteamID);
-                        //TODO: INFORM
-                        AddTrackedUser(user.SteamID, user.AddedBy, true, true);
+                        AddTrackedUser(user.SteamID, user.AddedBy, true);
                     }
                 }
             }
             Console.ReadKey();
             DBConnection.Close();
         }
+        
 
         static void Init()
         {
@@ -57,14 +55,20 @@ namespace SteamVacTrack
                 DBConnection = new SQLiteConnection($"Data Source={SQLiteDBFileName};Version=3;");
                 DBConnection.Open();
 
-                string StartSQL = "CREATE TABLE trackedusers (steamid INTEGER, addedby INTEGER, banned BOOLEAN, informed BOOLEAN)";
+                string StartSQL = "CREATE TABLE trackedusers (steamid INTEGER, addedby INTEGER, banned BOOLEAN)";
                 SQLiteCommand command = new SQLiteCommand(StartSQL, DBConnection);
                 command.ExecuteNonQuery();
+
+                StartSQL = "CREATE TABLE users (steamid INTEGER, sessionid TEXT)";
+                command = new SQLiteCommand(StartSQL, DBConnection);
+                command.ExecuteNonQuery();
+
                 DBConnection.Close();
             }
             DBConnection = new SQLiteConnection($"Data Source={SQLiteDBFileName};Version=3;");
             DBConnection.Open();
         }
+
         static bool IsVacBanned(string steamID)
         {
             var wc = new WebClient();
@@ -85,18 +89,16 @@ namespace SteamVacTrack
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                var banned = bool.Parse(reader["banned"].ToString());
-                var informed = bool.Parse(reader["informed"].ToString());
-                var NewUser = new TrackedUser(reader["steamid"].ToString(), reader["addedby"].ToString(), banned, informed);
+                var NewUser = new TrackedUser(reader["steamid"].ToString(), reader["addedby"].ToString(), bool.Parse(reader["banned"].ToString()));
                 ToReturn.Add(NewUser);
             }
             return ToReturn;
         }
 
-        static void AddTrackedUser(string SteamIDToTrack, string SteamIDRequestedTrack, bool banned = false, bool informed = false)
+        static void AddTrackedUser(string SteamIDToTrack, string SteamIDRequestedTrack, bool banned = false)
         {
-            var boolvals = $"{banned.ToString().ToLower()}, {informed.ToString().ToLower()}".Replace("true", "1").Replace("false", "0");
-            string sql = $"insert into trackedusers (steamid, addedby, banned, informed) values ({SteamIDToTrack}, {SteamIDRequestedTrack}, {boolvals})";
+            var boolvals = $"{banned.ToString().ToLower()}".Replace("true", "1").Replace("false", "0");
+            string sql = $"insert into trackedusers (steamid, addedby, banned) values ({SteamIDToTrack}, {SteamIDRequestedTrack}, {boolvals})";
             SQLiteCommand command = new SQLiteCommand(sql, DBConnection);
             command.ExecuteNonQuery();
         }
