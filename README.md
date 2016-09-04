@@ -7,7 +7,7 @@ I can add multi-user support if there is enough interest and bribe (BTC: 38ehnuP
 
 ## Dependencies
 
-php-sqlite3. On linux, install with `sudo apt-get install php-sqlite3` and then do `sudo phpenmod pdo_sqlite` and `sudo apachectl graceful`.
+php-sqlite3 and php-bcmath. On linux, install with `sudo apt-get install php-sqlite3 php-bcmath` and then do `sudo phpenmod pdo_sqlite` and `sudo phpenmod bcmath`, and then finally `sudo apachectl graceful`.
 
 mono-complete (or if you are on windows, .net framework 4.5): http://www.mono-project.com/docs/getting-started/install/linux/
 
