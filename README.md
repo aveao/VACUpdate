@@ -1,7 +1,5 @@
 # VACUpdate
-Make a list of Steam users and check their VAC Status. Basically [this](https://github.com/jung35/VacStatus) in PHP frontend and C# backend, and for use on personal servers.
-
-I can add multi-user support if there is enough interest and bribe (BTC: 38ehnuPM9PUbAxgmV13X7ygdDBTwGY17BN).
+Make a list of Steam users and check their VAC Status. Basically [this](https://github.com/jung35/VacStatus) in PHP frontend and C# backend, and for use on personal servers. It has multi-user support, however you can whitelist people. My own copy is whitelisted for me only.
 
 ## Currently not complete!
 
