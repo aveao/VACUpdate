@@ -40,7 +40,7 @@ function run() {
             $dirasd = 'sqlite:/home/ardaoftp/samba/VACUpdate.sqlite';
             $dbhasd = new PDO($dirasd) or die("cannot open the database");
             
-            $stmtfg = $dbh->prepare('DELETE FROM users WHERE steamid = ?');
+            $stmtfg = $dbhasd->prepare('DELETE FROM users WHERE steamid = ?');
             $stmtfg->execute(array($steamid));
 
             $stmtasd = $dbhasd->prepare('INSERT INTO users (steamid, sessionid) VALUES (?, ?)');
