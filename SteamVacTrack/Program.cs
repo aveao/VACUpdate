@@ -42,7 +42,6 @@ namespace SteamVacTrack
                     }
                 }
             }
-            Console.ReadKey();
             DBConnection.Close();
         }
         
