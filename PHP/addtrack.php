@@ -46,16 +46,27 @@ function startsWith($haystack, $needle) {
 
 function AddToDB($dbsteamid)
 {
-    $dir = 'sqlite:/home/ardaoftp/samba/VACUpdate.sqlite';
-    $dbh = new PDO($dir) or die("cannot open the database");
 
-    $stmt = $dbh->prepare('INSERT INTO trackedusers (steamid, addedby, banned) VALUES (?, ?, 0)');
-    $stmt->execute(array($dbsteamid, $_SESSION["vacupdatesteamid"]));
+    $SteamProfileXML = file_get_contents("http://steamcommunity.com/profiles/".$dbsteamid."?xml=1");
+    if (preg_match('/The specified profile could not be found./',$SteamProfileXML))
+    {
+         'err: not found';
+    }
+    else
+    {
+        $dir = 'sqlite:/home/ardaoftp/samba/VACUpdate.sqlite';
+        $dbh = new PDO($dir) or die("cannot open the database");
+        $xml=simplexml_load_string($SteamProfileXML) or die("err: Cannot create xml");
+        $name = $xml->steamID;
 
-    $stmt = null;
-    $dbh = null;
+        $stmt = $dbh->prepare('INSERT INTO trackedusers (steamid, steamname, addedby, banned) VALUES (?, ?, ?, 0)');
+        $stmt->execute(array($dbsteamid, $_SESSION["vacupdatesteamid"], $name));
 
-    echo("Added " . $dbsteamid . "<br>");
+        $stmt = null;
+        $dbh = null;
+
+        echo("Added " . $dbsteamid . "<br>");
+    }
 }
 
 function ParseCSGOStatus($text)
