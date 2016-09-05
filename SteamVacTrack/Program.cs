@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
@@ -16,11 +16,13 @@ namespace SteamVacTrack
         public class TrackedUser
         {
             public string SteamID { get; set; }
+            public string SteamName { get; set; }
             public string AddedBy { get; set; }
             public bool Banned { get; set; }
-            public TrackedUser(string steamid, string addedBy, bool banned)
+            public TrackedUser(string steamid, string steamname, string addedBy, bool banned)
             {
                 SteamID = steamid;
+                SteamName = steamname;
                 AddedBy = addedBy;
                 Banned = banned;
             }
@@ -37,8 +39,7 @@ namespace SteamVacTrack
                     Console.WriteLine($"User {user.SteamID}, Vac Status: {isbanned}");
                     if (isbanned)
                     {
-                        DeleteTrackedUser(user.SteamID);
-                        AddTrackedUser(user.SteamID, user.AddedBy, true);
+                        SetBanned(user.SteamID);
                     }
                 }
             }
@@ -54,7 +55,7 @@ namespace SteamVacTrack
                 DBConnection = new SQLiteConnection($"Data Source={SQLiteDBFileName};Version=3;");
                 DBConnection.Open();
 
-                string StartSQL = "CREATE TABLE trackedusers (steamid INTEGER, addedby INTEGER, banned BOOLEAN)";
+                string StartSQL = "CREATE TABLE trackedusers (steamid INTEGER, steamname TEXT, addedby INTEGER, banned BOOLEAN)";
                 SQLiteCommand command = new SQLiteCommand(StartSQL, DBConnection);
                 command.ExecuteNonQuery();
 
@@ -88,16 +89,24 @@ namespace SteamVacTrack
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                var NewUser = new TrackedUser(reader["steamid"].ToString(), reader["addedby"].ToString(), bool.Parse(reader["banned"].ToString()));
+                var NewUser = new TrackedUser(reader["steamid"].ToString(), reader["steamname"].ToString(), reader["addedby"].ToString(), bool.Parse(reader["banned"].ToString()));
                 ToReturn.Add(NewUser);
             }
             return ToReturn;
         }
 
-        static void AddTrackedUser(string SteamIDToTrack, string SteamIDRequestedTrack, bool banned = false)
+        static void SetBanned(string SteamID)
+        {
+            string sql = $"UPDATE trackedusers SET banned = 1 WHERE steamid = { SteamID }";
+            SQLiteCommand command = new SQLiteCommand(sql, DBConnection);
+            command.ExecuteNonQuery();
+            
+        }
+
+        static void AddTrackedUser(string SteamIDToTrack, string SteamNameToTrack, string SteamIDRequestedTrack, bool banned = false)
         {
             var boolvals = $"{banned.ToString().ToLower()}".Replace("true", "1").Replace("false", "0");
-            string sql = $"insert into trackedusers (steamid, addedby, banned) values ({SteamIDToTrack}, {SteamIDRequestedTrack}, {boolvals})";
+            string sql = $"insert into trackedusers (steamid, steamname, addedby, banned) values ({SteamIDToTrack}, {SteamNameToTrack}, {SteamIDRequestedTrack}, {boolvals})";
             SQLiteCommand command = new SQLiteCommand(sql, DBConnection);
             command.ExecuteNonQuery();
         }
