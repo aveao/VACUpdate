@@ -14,9 +14,7 @@ function postTable()
         echo ("<tr><th>SteamID</th><th>Steam Name</th><th>Added By</th><th>Banned</th></tr>");
         foreach ($dbh->query($query) as $row)
         {
-            echo ('<tr>');
-            echo ("<td>" . $row[0] . "</td><td>" . $row[2] . "</td><td>" . $row[1] . "</td><td>" . emojify($row[3]) . "</td>");
-            echo ('</tr>');
+            echo (sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", $row[0], $row[2], $row[1], emojify($row[3])));
         }
         echo('</table>');
         $query = null;
