@@ -11,10 +11,10 @@ function postTable()
         $dbh  = new PDO($dir) or die("cannot open the database");
         $query =  "SELECT * FROM trackedusers";
         echo('<table style="width:100%;text-align=left;font-family: \'Palanquin\', sans-serif;color: white;" border="1">');
-        echo ("<tr><th>SteamID</th><th>Steam Name</th><th>Added By</th><th>Banned</th></tr>");
+        echo ("<tr><th>Steam Name (SteamID64)</th><th>Added By</th><th>Banned</th></tr>");
         foreach ($dbh->query($query) as $row)
         {
-            echo (sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", $row[0], $row[2], $row[1], emojify($row[3])));
+            echo (sprintf("<tr><td>%s (<a href=http://steamcommunity.com/profiles/%s>%s</a>)</td><td>%s</td><td>%s</td></tr>", $row[2], $row[0], $row[0], $row[1], emojify($row[3])));
         }
         echo('</table>');
         $query = null;
