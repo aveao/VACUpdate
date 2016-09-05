@@ -69,13 +69,23 @@ function AddToDB($dbsteamid)
     }
 }
 
-function ParseCSGOStatus($text)
+function AddSteamIDList($text)
 {
     preg_match_all("/STEAM_[0,1]:[0,1]:[0-9]{1,9}/", $text, $SteamIDs);
     
     foreach($SteamIDs[0] as $k=>$v) 
     {
         AddToDB(SteamIDToSteamID64($v));
+    }
+}
+
+function AddSteamID64List($text)
+{
+    preg_match_all("/7656119[0-9]{10}/", $text, $SteamIDs);
+    
+    foreach($SteamIDs[0] as $k=>$v) 
+    {
+        AddToDB($v);
     }
 }
 
@@ -125,19 +135,19 @@ function SteamIDToSteamID64($id)
 
 if (startsWith($input, "STEAM_")) //SteamID - Example: STEAM_1:0:37016670
 {
-    AddToDB(SteamIDToSteamID64($input));
+    AddSteamIDList($input);
 }
 else if (startsWith($input, "765")) //SteamID64 - Example: 76561198034299068
 {
-    AddToDB($input);
+    AddSteamID64List($input);
 }
-else if (startsWith($input, "http://steamcommunity.com/")) //Link - Example: 76561198034299068
+else if (startsWith($input, "http://steamcommunity.com/")) //Link - Example: http://steamcommunity.com/profiles/76561198034299068
 {
     $slashpos = strrpos($input, "/") + 1;
     $steamid = substr($input, $slashpos);
     if (startsWith($steamid, "765"))
     {
-        AddToDB($steamid);
+        AddSteamID64List($input);
     }
     else
     {
@@ -146,7 +156,7 @@ else if (startsWith($input, "http://steamcommunity.com/")) //Link - Example: 765
 }
 else if (preg_match("/userid name uniqueid connected ping loss state rate/", $input)) //CS:GO status Command Output - Example: https://github.com/ardaozkal/VACUpdate/issues/3#issuecomment-244571684
 {
-    ParseCSGOStatus($input);
+    AddSteamIDList($input);
 }
 else //Assume CustomLink - Example: ardaozkal
 {
