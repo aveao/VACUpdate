@@ -11,11 +11,11 @@ function postTable()
         $dbh  = new PDO($dir) or die("cannot open the database");
         $query =  "SELECT * FROM trackedusers";
         echo('<table style="width:100%;text-align=left;font-family: \'Palanquin\', sans-serif;color: white;" border="1">');
-        echo ("<tr><th>SteamID</th><th>Added By</th><th>Banned</th></tr>");
+        echo ("<tr><th>SteamID</th><th>Steam Name</th><th>Added By</th><th>Banned</th></tr>");
         foreach ($dbh->query($query) as $row)
         {
             echo ('<tr>');
-            echo ("<td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . emojify($row[2]) . "</td>");
+            echo ("<td>" . $row[0] . "</td><td>" . $row[2] . "</td><td>" . $row[1] . "</td><td>" . emojify($row[3]) . "</td>");
             echo ('</tr>');
         }
         echo('</table>');
